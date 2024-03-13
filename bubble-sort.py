@@ -1,33 +1,6 @@
 import random
 import matplotlib.pyplot as plt
-
-# Criação das listas
-
-# 35 ms
-arraySmall = [random.randint(0, 100) for _ in range(10)]
-
-# 34 ms
-arrayLarge = [random.randint(0, 100) for _ in range(100)]
-
-# 111 ms
-arrayLarger = [random.randint(0, 100) for _ in range(1000)]
-
-# 4842 ms
-arrayLargest = [random.randint(0, 100) for _ in range(10000)]
-
-# 92 ms
-dinamicList = []
-
-for i in range(1000):
-    dinamicList.append(random.randint(0,1000))
-
-# Leitura de arquivo
-with open("arquivo.txt", "r") as arquivo:
-  linhas = arquivo.readlines()
-# Criação da lista do arquivo
-# 170 ms
-listaArquivo = [int(linha.strip()) for linha in linhas]
-
+import time
 
 def bubble_sort(number):
     n = len(number)
@@ -39,8 +12,34 @@ def bubble_sort(number):
                 number[j] = number[j + 1]
                 number[j + 1] = aux
 
+def measure_time(array):
+    start_time = time.time()
+    bubble_sort(array)
+    end_time = time.time()
+    return end_time - start_time
 
-bubble_sort(listaArquivo)
-print(listaArquivo)
+# Criação das listas
+sizes = [10, 100, 1000, 10000]
+times = []
+
+for size in sizes:
+    array = [random.randint(0, 100) for _ in range(size)]
+    times.append(measure_time(array))
+
+# Leitura de arquivo
+with open("arquivo.txt", "r") as arquivo:
+    linhas = arquivo.readlines()
+
+# Criação da lista do arquivo
+arquivo_array = [int(linha.strip()) for linha in linhas]
+arquivo_time = measure_time(arquivo_array)
+sizes.append(len(arquivo_array))
+times.append(arquivo_time)
 
 # Plotagem do gráfico
+plt.plot(sizes, times, marker='o')
+plt.title('Desempenho do Bubble Sort')
+plt.xlabel('Tamanho do Array')
+plt.ylabel('Tempo de Execução (s)')
+plt.grid(True)
+plt.show()
